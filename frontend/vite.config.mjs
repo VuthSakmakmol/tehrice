@@ -43,8 +43,9 @@ export default defineConfig({
     extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue']
   },
   server: {
-    port: 3000,
-    open: true
+    proxy: {
+      '/api': 'http://localhost:4789', // 👈 correct backend port
+    },
   },
   css: {
     preprocessorOptions: {
