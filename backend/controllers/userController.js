@@ -34,3 +34,36 @@ exports.deleteAdmin = async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ message: 'Admin deleted' });
 };
+
+
+//Delivery___________________________________________________________________________________________
+exports.getDeliveries = async (req, res) => {
+  const deliveries = await User.find({ role: 'Delivery' });
+  res.json(deliveries);
+};
+
+exports.createDelivery = async (req, res) => {
+  const { name, phone, password } = req.body;
+  const exists = await User.findOne({ phone });
+  if (exists) return res.status(409).json({ message: 'Phone already in use' });
+
+  const hashed = await bcrypt.hash(password, 10);
+  const newDelivery = new User({ name, phone, password: hashed, role: 'Delivery' });
+  await newDelivery.save();
+  res.status(201).json(newDelivery);
+};
+
+exports.updateDelivery = async (req, res) => {
+  const { name, phone, password } = req.body;
+  const updated = { name, phone };
+  if (password) updated.password = await bcrypt.hash(password, 10);
+
+  const result = await User.findByIdAndUpdate(req.params.id, updated, { new: true });
+  res.json(result);
+};
+
+exports.deleteDelivery = async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Delivery user deleted' });
+};
+
