@@ -9,10 +9,25 @@ import DashboardGuest from '../views/DashboardGuest.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
-  { path: '/dashboard/superadmin', component: DashboardSuperAdmin, meta: { requiresAuth: true, role: 'SuperAdmin' } },
-  { path: '/dashboard/admin', component: DashboardAdmin, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/dashboard/delivery', component: DashboardDelivery, meta: { requiresAuth: true, role: 'Delivery' } },
-  { path: '/dashboard/guest', component: DashboardGuest }
+  {
+    path: '/dashboard/superadmin',
+    component: DashboardSuperAdmin,
+    meta: { requiresAuth: true, role: 'SuperAdmin' }
+  },
+  {
+    path: '/dashboard/admin',
+    component: DashboardAdmin,
+    meta: { requiresAuth: true, role: 'Admin' }
+  },
+  {
+    path: '/dashboard/delivery',
+    component: DashboardDelivery,
+    meta: { requiresAuth: true, role: 'Delivery' }
+  },
+  {
+    path: '/dashboard/guest',
+    component: DashboardGuest
+  }
 ];
 
 const router = createRouter({
@@ -20,22 +35,24 @@ const router = createRouter({
   routes
 });
 
-// Role-Based Navigation Guard
+// ✅ Role-Based Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
+
   if (to.meta.requiresAuth) {
     if (!token) return next('/login');
 
     try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
+      const decoded = JSON.parse(atob(token.split('.')[1])); // decode JWT
       if (to.meta.role && decoded.role !== to.meta.role) {
-        return next('/login'); // or redirect based on role
+        return next('/login'); // redirect if role mismatch
       }
     } catch {
-      return next('/login');
+      return next('/login'); // token parse error
     }
   }
-  next();
+
+  next(); // allowed
 });
 
 export default router;
