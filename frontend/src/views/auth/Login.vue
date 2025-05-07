@@ -65,21 +65,21 @@ const handleLogin = async () => {
 
   try {
     const { data } = await api.post('/auth/login', form.value)
-    userStore.setUser(data) // save token and user in store
 
-    // Redirect based on role
-    switch (data.user.role) {
-      case 'superadmin':
-        router.push('/superadmin/dashboard')
-        break
-      case 'admin':
-        router.push('/admin/dashboard')
-        break
-      case 'customer':
-        router.push('/customer/dashboard')
-        break
-      default:
-        router.push('/')
+    // ✅ Set user before redirect
+    userStore.setUser(data)
+
+    const role = data.user.role.toLowerCase()  // ensure lowercase
+
+    // ✅ Ensure router push matches lowercase path
+    if (role === 'superadmin') {
+      await router.push('/superadmin/dashboard')
+    } else if (role === 'admin') {
+      await router.push('/admin/dashboard')
+    } else if (role === 'customer') {
+      await router.push('/customer/dashboard')
+    } else {
+      await router.push('/')
     }
 
     Swal.fire('Success', 'Login successful!', 'success')
@@ -90,6 +90,7 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
+
 </script>
 
 <style scoped>

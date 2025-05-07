@@ -1,22 +1,22 @@
+// src/plugins/axios.js
 import axios from 'axios'
 import { useUserStore } from '@/stores/userStore'
-import { pinia } from '@/main'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4789/api',
-  timeout: 10000
+  baseURL: 'http://localhost:4789/api',
+  headers: { 'Content-Type': 'application/json' }
 })
 
-api.interceptors.request.use(
-  (config) => {
-    const store = useUserStore(pinia)
-    const token = store.token
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error)
-)
+// Attach token
+api.interceptors.request.use((config) => {
+  const userStore = useUserStore()
+  if (userStore.token) {
+    config.headers.Authorization = `Bearer ${userStore.token}`
+    console.log('✅ Token attached:', userStore.token)
+  } else {
+    console.warn('⚠️ No token found')
+  }
+  return config
+})
 
 export default api

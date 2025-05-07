@@ -10,47 +10,49 @@
       <v-list-item
         :prepend-avatar="userAvatar"
         :title="userName"
-        :subtitle="userEmail"
+        :subtitle="userPhone"
       />
     </v-list>
 
-    <v-divider />
+    <v-divider class="my-2" />
 
-    <!-- Navigation Menu -->
+    <!-- Dashboard -->
     <v-list density="compact" nav>
-      <!-- Dashboard -->
       <v-list-item
         v-if="dashboardPath"
         :to="dashboardPath"
         prepend-icon="mdi-view-dashboard"
         title="Dashboard"
-        value="dashboard"
       />
 
-      <!-- Home -->
+      <!-- Public links -->
       <v-list-item
         to="/"
         prepend-icon="mdi-home"
         title="Home"
-        value="home"
       />
-
-      <!-- Products -->
       <v-list-item
         to="/guest/product-list"
         prepend-icon="mdi-cart"
         title="Products"
-        value="products"
+      />
+
+      <!-- Admin-only -->
+      <v-list-item
+        v-if="role === 'admin'"
+        to="/admin/dashboard"
+        prepend-icon="mdi-shield-account"
+        title="Admin Panel"
+      />
+
+      <!-- Superadmin-only -->
+      <v-list-item
+        v-if="role === 'superadmin'"
+        to="/superadmin/admins"
+        prepend-icon="mdi-account-group"
+        title="Manage Admins"
       />
     </v-list>
-    <!-- Admin Panel Link (only for admin) -->
-    <v-list-item
-      v-if="role === 'admin'"
-      to="/admin/dashboard"
-      prepend-icon="mdi-shield-account"
-      title="Admin Panel"
-      value="admin"
-    />
   </v-navigation-drawer>
 </template>
 
@@ -60,16 +62,19 @@ import { useUserStore } from '@/stores/userStore'
 
 const userStore = useUserStore()
 
+const role = computed(() => userStore.role)
+
 const dashboardPath = computed(() => {
-  const role = userStore.role
-  if (role === 'superadmin') return '/superadmin/dashboard'
-  if (role === 'admin') return '/admin/dashboard'
-  if (role === 'customer') return '/customer/dashboard'
-  return null
+  switch (role.value) {
+    case 'superadmin': return '/superadmin/dashboard'
+    case 'admin': return '/admin/dashboard'
+    case 'customer': return '/customer/dashboard'
+    default: return null
+  }
 })
 
 const userName = computed(() => userStore.user?.name || 'Guest')
-const userEmail = computed(() => userStore.user?.phone || '')
+const userPhone = computed(() => userStore.user?.phone || '')
 const userAvatar = computed(() =>
   userStore.user
     ? 'https://randomuser.me/api/portraits/lego/1.jpg'

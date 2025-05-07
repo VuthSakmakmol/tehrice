@@ -70,78 +70,78 @@
     </v-container>
   </template>
   
+  
   <script setup>
-  import { ref } from 'vue'
-  import Swal from 'sweetalert2'
-  
-  const showForm = ref(false)
-  const valid = ref(true)
-  const selectedIndex = ref(null)
-  
-  const form = ref({
-    name: '',
-    phone: '',
-    password: ''
-  })
-  
-  const adminUsers = ref([
-    { name: 'Admin One', phone: '010123456' },
-    { name: 'Admin Two', phone: '011234567' }
-  ])
-  
-  const toggleForm = () => {
-    showForm.value = !showForm.value
-    if (!showForm.value) resetForm()
+import { ref, onMounted } from 'vue'
+import Swal from 'sweetalert2'
+import api from '@/plugins/axios'
+
+const admins = ref([])
+const form = ref({ name: '', phone: '', password: '' })
+const selectedId = ref(null)
+const showForm = ref(false)
+
+const fetchAdmins = async () => {
+  try {
+    const { data } = await api.get('/admins')
+    admins.value = data
+  } catch (err) {
+    console.error('Failed to fetch admins:', err)
+    Swal.fire('Error', 'Failed to fetch admins', 'error')
   }
-  
-  const submitForm = () => {
-    if (!valid.value) return
-  
-    if (selectedIndex.value !== null) {
-      adminUsers.value[selectedIndex.value] = { ...form.value }
+}
+
+const submitForm = async () => {
+  try {
+    if (selectedId.value) {
+      await api.put(`/admins/${selectedId.value}`, form.value)
+      Swal.fire('Updated!', 'Admin updated successfully', 'success')
     } else {
-      adminUsers.value.push({ ...form.value })
+      await api.post('/admins', form.value)
+      Swal.fire('Created!', 'Admin created successfully', 'success')
     }
-  
-    Swal.fire({
-      icon: 'success',
-      title: selectedIndex.value !== null ? 'Admin Updated' : 'Admin Created',
-      timer: 1500,
-      showConfirmButton: false
-    })
-  
     resetForm()
+    fetchAdmins()
+  } catch (err) {
+    console.error('Failed to save admin:', err)
+    Swal.fire('Error', err?.response?.data?.message || 'Failed to save admin', 'error')
   }
-  
-  const editAdmin = (index) => {
-    selectedIndex.value = index
-    form.value = { ...adminUsers.value[index] }
-    showForm.value = true
+}
+
+const deleteAdmin = async (id) => {
+  const confirm = await Swal.fire({
+    title: 'Delete this admin?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it'
+  })
+
+  if (confirm.isConfirmed) {
+    try {
+      await api.delete(`/admins/${id}`)
+      Swal.fire('Deleted', 'Admin deleted', 'success')
+      fetchAdmins()
+    } catch (err) {
+      console.error('Failed to delete admin:', err)
+      Swal.fire('Error', 'Failed to delete admin', 'error')
+    }
   }
-  
-  const deleteAdmin = (index) => {
-    Swal.fire({
-      title: 'Delete this admin?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!'
-    }).then((res) => {
-      if (res.isConfirmed) {
-        adminUsers.value.splice(index, 1)
-        Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          timer: 1000,
-          showConfirmButton: false
-        })
-      }
-    })
-  }
-  
-  const resetForm = () => {
-    form.value = { name: '', phone: '', password: '' }
-    selectedIndex.value = null
-    showForm.value = false
-  }
-  </script>
+}
+
+const editAdmin = (admin) => {
+  form.value = { name: admin.name, phone: admin.phone, password: '' }
+  selectedId.value = admin._id
+  showForm.value = true
+}
+
+const resetForm = () => {
+  form.value = { name: '', phone: '', password: '' }
+  selectedId.value = null
+  showForm.value = false
+}
+
+onMounted(fetchAdmins)
+</script>
+
+
   

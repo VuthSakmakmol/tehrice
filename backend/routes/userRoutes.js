@@ -1,20 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-
 const auth = require('../middlewares/auth');
 
-// SuperAdmin-only access to Admin routes
-router.get('/admins', auth(['SuperAdmin']), userController.getAdmins);
-router.post('/admins', auth(['SuperAdmin']), userController.createAdmin);
-router.put('/admins/:id', auth(['SuperAdmin']), userController.updateAdmin);
-router.delete('/admins/:id', auth(['SuperAdmin']), userController.deleteAdmin);
+// ── Admin (superadmin only)
+router.get('/admins', auth(['superadmin']), userController.getAdmins);
+router.post('/admins', auth(['superadmin']), userController.createAdmin);
+router.put('/admins/:id', auth(['superadmin']), userController.updateAdmin);
+router.delete('/admins/:id', auth(['superadmin']), userController.deleteAdmin);
+router.get('/admin-count', auth(['superadmin']), userController.getAdminCount);
 
-
-// ── Delivery (accessible by SuperAdmin & Admin)
-router.get('/deliveries', auth(['SuperAdmin', 'Admin']), userController.getDeliveries);
-router.post('/deliveries', auth(['SuperAdmin', 'Admin']), userController.createDelivery);
-router.put('/deliveries/:id', auth(['SuperAdmin', 'Admin']), userController.updateDelivery);
-router.delete('/deliveries/:id', auth(['SuperAdmin', 'Admin']), userController.deleteDelivery);
+// ── Delivery (admin + superadmin)
+router.get('/deliveries', auth(['admin', 'superadmin']), userController.getDeliveries);
+router.post('/deliveries', auth(['admin', 'superadmin']), userController.createDelivery);
+router.put('/deliveries/:id', auth(['admin', 'superadmin']), userController.updateDelivery);
+router.delete('/deliveries/:id', auth(['admin', 'superadmin']), userController.deleteDelivery);
 
 module.exports = router;

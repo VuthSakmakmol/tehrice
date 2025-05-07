@@ -17,6 +17,7 @@ const AdminDashboard = () => import('@/views/admin/Dashboard.vue')
 
 // Superadmin
 const SuperDashboard = () => import('@/views/superadmin/Dashboard.vue')
+const AdminManager = () => import('@/views/superadmin/AdminManager.vue')
 
 const routes = [
   { path: '/login', component: Login },
@@ -43,7 +44,8 @@ const routes = [
     component: DefaultLayout,
     meta: { requiresAuth: true, role: 'superadmin' },
     children: [
-      { path: 'dashboard', component: SuperDashboard }
+      { path: 'dashboard', component: SuperDashboard },
+      { path: 'admins', component: AdminManager }
     ]
   },
 

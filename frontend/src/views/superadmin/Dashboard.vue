@@ -1,8 +1,8 @@
-<!-- src/views/superadmin/Dashboard.vue -->
 <template>
   <v-container>
     <h2 class="text-h5 font-weight-bold mb-4">Super Admin Dashboard</h2>
 
+    <!-- Admin Card -->
     <v-card class="pa-4 mb-4" elevation="2" @click="goToAdminManager" style="cursor: pointer;">
       <v-row align="center" justify="space-between">
         <v-col cols="auto">
@@ -22,7 +22,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import api from '@/plugins/axios'
+import api from '@/plugins/axios' // make sure baseURL is /api
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -30,10 +30,10 @@ const totalAdmins = ref(0)
 
 const fetchAdminCount = async () => {
   try {
-    const res = await api.get('/auth/admin-count') // ⬅️ You must create this backend route
+    const res = await api.get('/admin-count') // ✅ endpoint must match backend route
     totalAdmins.value = res.data.count
   } catch (err) {
-    console.error('Failed to load admin count', err)
+    console.error('❌ Failed to load admin count:', err.response?.data || err.message)
   }
 }
 

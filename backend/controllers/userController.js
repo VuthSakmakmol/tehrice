@@ -1,12 +1,11 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
-
 // ─────────────── GET Admins ───────────────
 exports.getAdmins = async (req, res) => {
   try {
-    const admins = await User.find({ role: 'Admin' });
-    console.log('📥 SuperAdmin fetched all Admins');
+    const admins = await User.find({ role: 'admin' });
+    console.log('📥 Superadmin fetched all admins');
     res.json(admins);
   } catch (err) {
     console.error('❌ Failed to fetch admins:', err.message);
@@ -18,7 +17,7 @@ exports.getAdmins = async (req, res) => {
 exports.createAdmin = async (req, res) => {
   try {
     const { name, phone, password } = req.body;
-    console.log('🛠 SuperAdmin creating Admin with:', req.body);
+    console.log('🛠 Superadmin creating admin with:', req.body);
 
     if (!name || !phone || !password) {
       return res.status(400).json({ message: 'All fields are required.' });
@@ -30,14 +29,14 @@ exports.createAdmin = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password.toString(), 10);
-    const newAdmin = new User({ name, phone, password: hashedPassword, role: 'Admin' });
+    const newAdmin = new User({ name, phone, password: hashedPassword, role: 'admin' });
     await newAdmin.save();
 
-    console.log('✅ Admin created by SuperAdmin:', newAdmin._id);
+    console.log('✅ Admin created by superadmin:', newAdmin._id);
     res.status(201).json({ message: 'Admin created', user: newAdmin });
   } catch (err) {
-    console.error('❌ Error creating Admin:', err.message);
-    res.status(500).json({ message: 'Error creating Admin' });
+    console.error('❌ Error creating admin:', err.message);
+    res.status(500).json({ message: 'Error creating admin' });
   }
 };
 
@@ -45,7 +44,7 @@ exports.createAdmin = async (req, res) => {
 exports.updateAdmin = async (req, res) => {
   try {
     const { name, phone, password } = req.body;
-    console.log(`✏️ SuperAdmin updating Admin ID: ${req.params.id}`);
+    console.log(`✏️ Superadmin updating admin ID: ${req.params.id}`);
     const updates = { name, phone };
 
     if (password) {
@@ -56,8 +55,8 @@ exports.updateAdmin = async (req, res) => {
     console.log('✅ Admin updated:', updated._id);
     res.json({ message: 'Admin updated', user: updated });
   } catch (err) {
-    console.error('❌ Error updating Admin:', err.message);
-    res.status(500).json({ message: 'Failed to update Admin' });
+    console.error('❌ Error updating admin:', err.message);
+    res.status(500).json({ message: 'Failed to update admin' });
   }
 };
 
@@ -65,20 +64,28 @@ exports.updateAdmin = async (req, res) => {
 exports.deleteAdmin = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    console.log('🗑️ Admin deleted by SuperAdmin:', req.params.id);
+    console.log('🗑️ Admin deleted by superadmin:', req.params.id);
     res.json({ message: 'Admin deleted' });
   } catch (err) {
-    console.error('❌ Error deleting Admin:', err.message);
-    res.status(500).json({ message: 'Failed to delete Admin' });
+    console.error('❌ Error deleting admin:', err.message);
+    res.status(500).json({ message: 'Failed to delete admin' });
   }
 };
 
+exports.getAdminCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments({ role: 'admin' });
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to count admins' });
+  }
+};
 
-// GET all Delivery users
+// ─────────────── GET Deliveries ───────────────
 exports.getDeliveries = async (req, res) => {
   try {
-    const deliveries = await User.find({ role: 'Delivery' });
-    console.log(`📦 ${req.user.role} fetched all Deliveries`);
+    const deliveries = await User.find({ role: 'delivery' });
+    console.log(`📦 ${req.user.role} fetched all deliveries`);
     res.json(deliveries);
   } catch (err) {
     console.error('❌ Failed to fetch deliveries:', err);
@@ -86,7 +93,7 @@ exports.getDeliveries = async (req, res) => {
   }
 };
 
-// CREATE a Delivery user
+// ─────────────── CREATE Delivery ───────────────
 exports.createDelivery = async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -102,7 +109,7 @@ exports.createDelivery = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password.toString(), 10);
-    const newDelivery = new User({ name, phone, password: hashedPassword, role: 'Delivery' });
+    const newDelivery = new User({ name, phone, password: hashedPassword, role: 'delivery' });
     await newDelivery.save();
 
     console.log('✅ Delivery user created:', newDelivery._id);
@@ -113,7 +120,7 @@ exports.createDelivery = async (req, res) => {
   }
 };
 
-// UPDATE Delivery
+// ─────────────── UPDATE Delivery ───────────────
 exports.updateDelivery = async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -131,7 +138,7 @@ exports.updateDelivery = async (req, res) => {
   }
 };
 
-// DELETE Delivery
+// ─────────────── DELETE Delivery ───────────────
 exports.deleteDelivery = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
@@ -141,4 +148,3 @@ exports.deleteDelivery = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete delivery' });
   }
 };
-

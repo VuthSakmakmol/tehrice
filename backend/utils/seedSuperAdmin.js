@@ -11,7 +11,7 @@ mongoose.connect('mongodb://localhost:27017/tehrice').then(async () => {
     name: 'Super Admin',
     phone: '123',
     password: hashed,
-    role: 'SuperAdmin'
+    role: 'superadmin'
   });
 
   await superAdmin.save();
