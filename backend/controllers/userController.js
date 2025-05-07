@@ -1,69 +1,144 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
-// GET all Admins
+
+// ─────────────── GET Admins ───────────────
 exports.getAdmins = async (req, res) => {
-  const admins = await User.find({ role: 'Admin' });
-  res.json(admins);
+  try {
+    const admins = await User.find({ role: 'Admin' });
+    console.log('📥 SuperAdmin fetched all Admins');
+    res.json(admins);
+  } catch (err) {
+    console.error('❌ Failed to fetch admins:', err.message);
+    res.status(500).json({ message: 'Failed to fetch admins' });
+  }
 };
 
-// POST Create Admin
+// ─────────────── CREATE Admin ───────────────
 exports.createAdmin = async (req, res) => {
-  const { name, phone, password } = req.body;
-  const exists = await User.findOne({ phone });
-  if (exists) return res.status(409).json({ message: 'Phone already in use' });
+  try {
+    const { name, phone, password } = req.body;
+    console.log('🛠 SuperAdmin creating Admin with:', req.body);
 
-  const hashed = await bcrypt.hash(password, 10);
-  const newAdmin = new User({ name, phone, password: hashed, role: 'Admin' });
-  await newAdmin.save();
-  res.status(201).json(newAdmin);
+    if (!name || !phone || !password) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const exists = await User.findOne({ phone });
+    if (exists) {
+      return res.status(409).json({ message: 'Phone number already registered.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password.toString(), 10);
+    const newAdmin = new User({ name, phone, password: hashedPassword, role: 'Admin' });
+    await newAdmin.save();
+
+    console.log('✅ Admin created by SuperAdmin:', newAdmin._id);
+    res.status(201).json({ message: 'Admin created', user: newAdmin });
+  } catch (err) {
+    console.error('❌ Error creating Admin:', err.message);
+    res.status(500).json({ message: 'Error creating Admin' });
+  }
 };
 
-// PUT Update Admin
+// ─────────────── UPDATE Admin ───────────────
 exports.updateAdmin = async (req, res) => {
-  const { name, phone, password } = req.body;
-  const updatedFields = { name, phone };
-  if (password) updatedFields.password = await bcrypt.hash(password, 10);
+  try {
+    const { name, phone, password } = req.body;
+    console.log(`✏️ SuperAdmin updating Admin ID: ${req.params.id}`);
+    const updates = { name, phone };
 
-  const updated = await User.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
-  res.json(updated);
+    if (password) {
+      updates.password = await bcrypt.hash(password.toString(), 10);
+    }
+
+    const updated = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
+    console.log('✅ Admin updated:', updated._id);
+    res.json({ message: 'Admin updated', user: updated });
+  } catch (err) {
+    console.error('❌ Error updating Admin:', err.message);
+    res.status(500).json({ message: 'Failed to update Admin' });
+  }
 };
 
-// DELETE Admin
+// ─────────────── DELETE Admin ───────────────
 exports.deleteAdmin = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Admin deleted' });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    console.log('🗑️ Admin deleted by SuperAdmin:', req.params.id);
+    res.json({ message: 'Admin deleted' });
+  } catch (err) {
+    console.error('❌ Error deleting Admin:', err.message);
+    res.status(500).json({ message: 'Failed to delete Admin' });
+  }
 };
 
 
-//Delivery___________________________________________________________________________________________
+// GET all Delivery users
 exports.getDeliveries = async (req, res) => {
-  const deliveries = await User.find({ role: 'Delivery' });
-  res.json(deliveries);
+  try {
+    const deliveries = await User.find({ role: 'Delivery' });
+    console.log(`📦 ${req.user.role} fetched all Deliveries`);
+    res.json(deliveries);
+  } catch (err) {
+    console.error('❌ Failed to fetch deliveries:', err);
+    res.status(500).json({ message: 'Failed to fetch deliveries' });
+  }
 };
 
+// CREATE a Delivery user
 exports.createDelivery = async (req, res) => {
-  const { name, phone, password } = req.body;
-  const exists = await User.findOne({ phone });
-  if (exists) return res.status(409).json({ message: 'Phone already in use' });
+  try {
+    const { name, phone, password } = req.body;
+    console.log(`${req.user.role} creating delivery:`, req.body);
 
-  const hashed = await bcrypt.hash(password, 10);
-  const newDelivery = new User({ name, phone, password: hashed, role: 'Delivery' });
-  await newDelivery.save();
-  res.status(201).json(newDelivery);
+    if (!name || !phone || !password) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const exists = await User.findOne({ phone });
+    if (exists) {
+      return res.status(409).json({ message: 'Phone already exists.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password.toString(), 10);
+    const newDelivery = new User({ name, phone, password: hashedPassword, role: 'Delivery' });
+    await newDelivery.save();
+
+    console.log('✅ Delivery user created:', newDelivery._id);
+    res.status(201).json({ message: 'Delivery created', user: newDelivery });
+  } catch (err) {
+    console.error('❌ Error creating delivery:', err);
+    res.status(500).json({ message: 'Failed to create delivery' });
+  }
 };
 
+// UPDATE Delivery
 exports.updateDelivery = async (req, res) => {
-  const { name, phone, password } = req.body;
-  const updated = { name, phone };
-  if (password) updated.password = await bcrypt.hash(password, 10);
+  try {
+    const { name, phone, password } = req.body;
+    const updates = { name, phone };
 
-  const result = await User.findByIdAndUpdate(req.params.id, updated, { new: true });
-  res.json(result);
+    if (password) {
+      updates.password = await bcrypt.hash(password.toString(), 10);
+    }
+
+    const updated = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
+    console.log('✏️ Delivery updated:', updated._id);
+    res.json({ message: 'Delivery updated', user: updated });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update delivery' });
+  }
 };
 
+// DELETE Delivery
 exports.deleteDelivery = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Delivery user deleted' });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    console.log('🗑️ Delivery deleted:', req.params.id);
+    res.json({ message: 'Delivery deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete delivery' });
+  }
 };
 

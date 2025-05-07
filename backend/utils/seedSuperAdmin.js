@@ -1,37 +1,20 @@
 const mongoose = require('mongoose');
-const User = require('../models/User'); // ✅ Adjusted path to go up one level
-require('dotenv').config();
+const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
-const seedSuperAdmin = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    console.log('✅ MongoDB connected');
+mongoose.connect('mongodb://localhost:27017/tehrice').then(async () => {
+  const exists = await User.findOne({ phone: '123' });
+  if (exists) return console.log('SuperAdmin already exists');
 
-    const phone = '123';
-    const existing = await User.findOne({ phone });
+  const hashed = await bcrypt.hash('123', 10);
+  const superAdmin = new User({
+    name: 'Super Admin',
+    phone: '123',
+    password: hashed,
+    role: 'SuperAdmin'
+  });
 
-    if (existing) {
-      console.log('⚠️  SuperAdmin already exists.');
-    } else {
-      const superAdmin = new User({
-        name: 'Super Admin',
-        phone,
-        password: '123',
-        role: 'SuperAdmin'
-      });
-
-      await superAdmin.save();
-      console.log('✅ SuperAdmin created successfully:', phone);
-    }
-  } catch (err) {
-    console.error('❌ Error seeding SuperAdmin:', err.message);
-  } finally {
-    mongoose.disconnect();
-    process.exit();
-  }
-};
-
-seedSuperAdmin();
+  await superAdmin.save();
+  console.log('✅ SuperAdmin seeded');
+  process.exit(0);
+});

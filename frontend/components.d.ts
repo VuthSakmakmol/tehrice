@@ -8,10 +8,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    BaseLineChart: typeof import('./src/components/BaseLineChart.vue')['default']
-    GuestWelcome: typeof import('./src/components/GuestWelcome.vue')['default']
-    Login: typeof import('./src/components/Login.vue')['default']
+    AddressForm: typeof import('./src/components/customer/AddressForm.vue')['default']
+    AdminManager: typeof import('./src/components/AdminManager.vue')['default']
+    Cart: typeof import('./src/components/customer/Cart.vue')['default']
+    DeliveryManager: typeof import('./src/components/DeliveryManager.vue')['default']
+    DeliveryManagerForAdmin: typeof import('./src/components/DeliveryManagerForAdmin.vue')['default']
+    FavoriteProduct: typeof import('./src/components/customer/FavoriteProduct.vue')['default']
+    LoadingSpinner: typeof import('./src/components/shared/LoadingSpinner.vue')['default']
+    Navbar: typeof import('./src/components/common/Navbar.vue')['default']
+    OrderSummary: typeof import('./src/components/customer/OrderSummary.vue')['default']
+    PermissionAMD: typeof import('./src/components/PermissionAMD.vue')['default']
+    ProductForm: typeof import('./src/components/admin/ProductForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./src/components/common/Sidebar.vue')['default']
   }
 }

@@ -1,49 +1,33 @@
 const express = require('express');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const http = require('http');
-const { Server } = require('socket.io');
 
-dotenv.config();
+// ✅ First create app
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: '*' }
-});
 
-// 🔌 WebSocket Event (example)
-io.on('connection', (socket) => {
-  console.log('🔗 New client connected:', socket.id);
+// ✅ Then configure CORS
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
-  socket.on('disconnect', () => {
-    console.log('❌ Client disconnected:', socket.id);
-  });
-});
-
-// 🌍 Middleware
-app.use(cors());
+// ✅ Then load config and middlewares
+dotenv.config();
 app.use(express.json());
 
-// 🛣️ Routes (example structure)
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-// Add more: products, orders, etc.
+// ✅ Routes
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', userRoutes);
+app.use('/api/auth', authRoutes);
 
-// 🌐 MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log('✅ MongoDB connected');
-})
-.catch((err) => {
-  console.error('❌ MongoDB connection error:', err);
-});
-
-// 🚀 Start Server
-const PORT = process.env.PORT || 4789;
-server.listen(PORT, () => {
-  console.log(`🚀 Server + WebSocket running on port ${PORT}`);
-});
+// ✅ Connect to MongoDB and start server
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    app.listen(process.env.PORT || 4789, () =>
+      console.log(`🚀 Server running on port ${process.env.PORT || 4789}`)
+    );
+  })
+  .catch(err => console.error('❌ MongoDB error:', err.message));

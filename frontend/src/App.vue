@@ -1,7 +1,14 @@
 <template>
-  <DefaultLayout />
+  <v-app>
+    <v-main>
+      <v-container>
+        <router-view />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
+
 <script setup>
-import DefaultLayout from './layout/DefaultLayout.vue';
+// Global app shell using router-view
 </script>
