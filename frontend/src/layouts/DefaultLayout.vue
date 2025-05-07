@@ -1,24 +1,30 @@
 <template>
-    <v-app>
-      <!-- Top Navbar -->
+  <v-app>
+
+    <v-main>
       <Navbar />
-  
-      <v-main>
-        <v-container fluid class="d-flex">
-          <!-- Sidebar -->
-          <Sidebar class="mr-4" />
-  
-          <!-- Main View Area -->
-          <v-container fluid class="pa-4">
-            <router-view />
-          </v-container>
-        </v-container>
-      </v-main>
-    </v-app>
-  </template>
-  
-  <script setup>
-  import Navbar from '@/components/common/Navbar.vue'
-  import Sidebar from '@/components/common/Sidebar.vue'
-  </script>
-  
+      <Sidebar />
+
+      <v-container fluid>
+        defualt 
+        <router-view />
+      </v-container>
+    </v-main>
+  </v-app>
+</template>
+
+<script setup>
+import { useUserStore } from '@/stores/userStore'
+import { computed } from 'vue'
+
+import Sidebar from '@/components/common/Sidebar.vue'
+import Navbar from '@/components/common/Navbar.vue'
+
+const userStore = useUserStore()
+
+// ✅ Prevent crash on undefined user
+const role = computed(() => userStore.user?.role || null)
+
+// ✅ Only show sidebar for admin and superadmin
+const showSidebar = computed(() => role.value === 'admin' || role.value === 'superadmin')
+</script>

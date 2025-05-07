@@ -10,7 +10,7 @@ exports.login = async (req, res) => {
 
     // Basic validation
     if (!phone || !password) {
-      return res.status(400).jso({ message: 'Phone and password are required.' });
+      return res.status(400).json({ message: 'Phone and password are required.' });
     }
 
     // Find user
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
         id: user._id,
         name: user.name,
         phone: user.phone,
-        role: user.role
+        role: user.role.toLowerCase(),
       }
     });
 
