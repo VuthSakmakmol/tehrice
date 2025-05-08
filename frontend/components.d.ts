@@ -17,6 +17,7 @@ declare module 'vue' {
     DeliveryManagerForAdmin: typeof import('./src/components/DeliveryManagerForAdmin.vue')['default']
     DeliveryPage: typeof import('./src/components/admin/DeliveryPage.vue')['default']
     FavoriteProduct: typeof import('./src/components/customer/FavoriteProduct.vue')['default']
+    Home: typeof import('./src/components/customer/Home.vue')['default']
     LoadingSpinner: typeof import('./src/components/shared/LoadingSpinner.vue')['default']
     Navbar: typeof import('./src/components/common/Navbar.vue')['default']
     OrderSummary: typeof import('./src/components/customer/OrderSummary.vue')['default']

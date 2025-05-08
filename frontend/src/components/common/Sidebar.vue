@@ -21,6 +21,13 @@
         :title="dashboardLabel"
       />
 
+      <v-list-item
+        v-if="role === 'superadmin'"
+        to="/superadmin/permissions"
+        prepend-icon="mdi-shield-key"
+        title="Admin Permissions"
+      />
+
       <!-- Public links -->
       <v-list-item to="/" prepend-icon="mdi-home" title="Home" />
       <v-list-item to="/guest/product-list" prepend-icon="mdi-cart" title="Products" />
@@ -70,6 +77,8 @@ const dashboardIcon = computed(() => {
     default: return 'mdi-view-dashboard'
   }
 })
+
+
 
 const userName = computed(() => userStore.user?.name || 'Guest')
 const userPhone = computed(() => userStore.user?.phone || '')

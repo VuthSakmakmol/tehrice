@@ -11,6 +11,7 @@ router.post('/admins', auth(['superadmin']), userController.createAdmin);
 router.put('/admins/:id', auth(['superadmin']), userController.updateAdmin);
 router.delete('/admins/:id', auth(['superadmin']), userController.deleteAdmin);
 router.get('/admin-count', auth(['superadmin']), userController.getAdminCount);
+router.put('/admins/:id/permissions', auth(['superadmin']), userController.updatePermissions);
 
 
 

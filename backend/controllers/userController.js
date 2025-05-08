@@ -224,3 +224,26 @@ exports.deleteCustomer = async (req, res) => {
   }
 }
 
+
+
+
+
+//_______________Permission___________________________
+
+// PUT /admins/:id/permissions
+exports.updatePermissions = async (req, res) => {
+  try {
+    const { permissions } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { permissions },
+      { new: true }
+    );
+
+    res.json({ message: 'Permissions updated', user: updatedUser });
+  } catch (err) {
+    console.error('❌ Failed to update permissions:', err);
+    res.status(500).json({ message: 'Failed to update permissions' });
+  }
+};
