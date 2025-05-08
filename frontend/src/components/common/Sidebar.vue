@@ -1,10 +1,5 @@
 <template>
-  <v-navigation-drawer
-    expand-on-hover
-    rail
-    app
-    class="elevation-1"
-  >
+  <v-navigation-drawer expand-on-hover rail app class="elevation-1">
     <!-- User Info -->
     <v-list>
       <v-list-item
@@ -16,36 +11,21 @@
 
     <v-divider class="my-2" />
 
-    <!-- Dashboard -->
+    <!-- Main Nav -->
     <v-list density="compact" nav>
+      <!-- Dashboard (dynamic role-based) -->
       <v-list-item
         v-if="dashboardPath"
         :to="dashboardPath"
-        prepend-icon="mdi-view-dashboard"
-        title="Dashboard"
+        :prepend-icon="dashboardIcon"
+        :title="dashboardLabel"
       />
 
       <!-- Public links -->
-      <v-list-item
-        to="/"
-        prepend-icon="mdi-home"
-        title="Home"
-      />
-      <v-list-item
-        to="/guest/product-list"
-        prepend-icon="mdi-cart"
-        title="Products"
-      />
+      <v-list-item to="/" prepend-icon="mdi-home" title="Home" />
+      <v-list-item to="/guest/product-list" prepend-icon="mdi-cart" title="Products" />
 
-      <!-- Admin-only -->
-      <v-list-item
-        v-if="role === 'admin'"
-        to="/admin/dashboard"
-        prepend-icon="mdi-shield-account"
-        title="Admin Panel"
-      />
-
-      <!-- Superadmin-only -->
+      <!-- Superadmin only -->
       <v-list-item
         v-if="role === 'superadmin'"
         to="/superadmin/admins"
@@ -70,6 +50,24 @@ const dashboardPath = computed(() => {
     case 'admin': return '/admin/dashboard'
     case 'customer': return '/customer/dashboard'
     default: return null
+  }
+})
+
+const dashboardLabel = computed(() => {
+  switch (role.value) {
+    case 'superadmin': return 'Super Admin Dashboard'
+    case 'admin': return 'Admin Dashboard'
+    case 'customer': return 'Customer Dashboard'
+    default: return 'Dashboard'
+  }
+})
+
+const dashboardIcon = computed(() => {
+  switch (role.value) {
+    case 'superadmin': return 'mdi-crown'
+    case 'admin': return 'mdi-shield-account'
+    case 'customer': return 'mdi-account'
+    default: return 'mdi-view-dashboard'
   }
 })
 

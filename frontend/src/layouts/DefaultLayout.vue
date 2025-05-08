@@ -6,7 +6,6 @@
       <Sidebar />
 
       <v-container fluid>
-        defualt 
         <router-view />
       </v-container>
     </v-main>

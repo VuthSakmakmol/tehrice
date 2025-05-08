@@ -148,3 +148,79 @@ exports.deleteDelivery = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete delivery' });
   }
 };
+
+
+
+
+
+// ───── GET Customers ─────
+exports.getCustomers = async (req, res) => {
+  try {
+    const customers = await User.find({ role: 'customer' })
+    res.json(customers)
+  } catch (err) {
+    console.error('❌ Failed to fetch customers:', err.message)
+    res.status(500).json({ message: 'Failed to fetch customers' })
+  }
+}
+
+// ───── CREATE Customer ─────
+exports.createCustomer = async (req, res) => {
+  try {
+    const { name, phone, password, status = 'Active' } = req.body
+
+    if (!name || !phone || !password) {
+      return res.status(400).json({ message: 'All fields are required.' })
+    }
+
+    const exists = await User.findOne({ phone })
+    if (exists) {
+      return res.status(409).json({ message: 'Phone already registered.' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password.toString(), 10)
+    const newCustomer = new User({
+      name,
+      phone,
+      password: hashedPassword,
+      role: 'customer',
+      status
+    })
+
+    await newCustomer.save()
+    res.status(201).json({ message: 'Customer created', user: newCustomer })
+  } catch (err) {
+    console.error('❌ Error creating customer:', err.message)
+    res.status(500).json({ message: 'Failed to create customer' })
+  }
+}
+
+// ───── UPDATE Customer ─────
+exports.updateCustomer = async (req, res) => {
+  try {
+    const { name, phone, password, status } = req.body
+    const updates = { name, phone, status }
+
+    if (password) {
+      updates.password = await bcrypt.hash(password.toString(), 10)
+    }
+
+    const updated = await User.findByIdAndUpdate(req.params.id, updates, { new: true })
+    res.json({ message: 'Customer updated', user: updated })
+  } catch (err) {
+    console.error('❌ Error updating customer:', err.message)
+    res.status(500).json({ message: 'Failed to update customer' })
+  }
+}
+
+// ───── DELETE Customer ─────
+exports.deleteCustomer = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id)
+    res.json({ message: 'Customer deleted' })
+  } catch (err) {
+    console.error('❌ Error deleting customer:', err.message)
+    res.status(500).json({ message: 'Failed to delete customer' })
+  }
+}
+

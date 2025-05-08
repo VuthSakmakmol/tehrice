@@ -9,10 +9,13 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddressForm: typeof import('./src/components/customer/AddressForm.vue')['default']
-    AdminManager: typeof import('./src/components/AdminManager.vue')['default']
+    AdminManager: typeof import('./src/views/superadmin/AdminManager.vue')['default']
     Cart: typeof import('./src/components/customer/Cart.vue')['default']
-    DeliveryManager: typeof import('./src/components/DeliveryManager.vue')['default']
+    CustomerManager: typeof import('./src/components/management/CustomerManager.vue')['default']
+    CustomerPage: typeof import('./src/components/admin/CustomerPage.vue')['default']
+    DeliveryManager: typeof import('./src/components/management/DeliveryManager.vue')['default']
     DeliveryManagerForAdmin: typeof import('./src/components/DeliveryManagerForAdmin.vue')['default']
+    DeliveryPage: typeof import('./src/components/admin/DeliveryPage.vue')['default']
     FavoriteProduct: typeof import('./src/components/customer/FavoriteProduct.vue')['default']
     LoadingSpinner: typeof import('./src/components/shared/LoadingSpinner.vue')['default']
     Navbar: typeof import('./src/components/common/Navbar.vue')['default']

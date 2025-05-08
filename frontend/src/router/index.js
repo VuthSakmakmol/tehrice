@@ -18,7 +18,9 @@ const AdminDashboard = () => import('@/views/admin/Dashboard.vue')
 // Superadmin
 const SuperDashboard = () => import('@/views/superadmin/Dashboard.vue')
 const AdminManager = () => import('@/views/superadmin/AdminManager.vue')
-const DeliveryManager = () => import('@/views/superadmin/DeliveryManager.vue')
+const DeliveryManager = () => import('@/components/management/DeliveryManager.vue')
+const CustomerManager = () => import('@/components/management/CustomerManager.vue')
+  
 
 const routes = [
   { path: '/login', component: Login },
@@ -37,7 +39,9 @@ const routes = [
     component: DefaultLayout,
     meta: { requiresAuth: true, role: 'admin' },
     children: [
-      { path: 'dashboard', component: AdminDashboard }
+      { path: 'dashboard', component: AdminDashboard },
+      { path: 'deliveries', component: () => import('@/components/admin/DeliveryPage.vue') },
+      { path: 'customers', component: () => import('@/components/admin/CustomerPage.vue') }
     ]
   },
   {
@@ -48,6 +52,7 @@ const routes = [
       { path: 'dashboard', component: SuperDashboard },
       { path: 'admins', component: AdminManager },
       { path: 'deliveries', component: DeliveryManager },
+      { path: 'customers', component: CustomerManager}
     ]
   },
 
